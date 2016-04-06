@@ -1,0 +1,126 @@
+﻿@{
+    ViewBag.Title = "CarFinderApp";
+}
+
+<div class="container-fluid">
+
+    <p align="center"><img class="img-responsive" src="~/images/CarFinderAppCollage.jpg" /></p>
+    <br />
+    <br>
+    <p class="lead">This is a Web API application uses AngularJS, HTML5, MVC, and C# 
+    to retrive recall information provided by the National Highway Traffic Safety Administration 
+    (NHTSA) with coressponing images are rendered from Bing.com search.
+    </p>
+
+
+<div data-ng-app="CarFinderApp" class="container-fluid">
+    <div ng-controller="CarFinderAppController" >
+
+    <div class="row">
+        <form>
+            <div class="col-sm-3"><select id="yearSelection" class="form-control" ng-model="selectedYear" ng-options="year for year in years" ng-change="getMakes()"></select></div>
+            <div class="col-sm-3"><select id="makeSelection" class="form-control" ng-disabled="selectedYear == null" ng-model="selectedMake" ng-options="make for make in makes" ng-change="getModels()"></select></div>
+            <div class="col-sm-3"><select id="modelSelection" class="form-control" ng-disabled="selectedMake == null" ng-model="selectedModel" ng-options="model for model in models" ng-change="getTrims()"></select></div>
+            <div class="col-sm-3"><select id="trimSelection" class="form-control" ng-disabled="selectedModel == null" ng-model="selectedTrim" ng-options="trim for trim in trims" ng-change="getCars()"></select></div>
+        </form>
+    </div>
+
+    <br />
+
+    <div id="carInfo">
+        <div class="row" ng-show="carData.myCar.model_year !=''">
+            <div class="col-sm-3">Year:</div>
+            <div class="col-sm-9"> {{carData.myCar.model_year}}</div>
+        </div>
+        <div class="row" ng-show="carData.myCar.make !=''">
+            <div class="col-sm-3">Make:</div>
+            <div class="col-sm-9"> {{carData.myCar.make}}</div>
+        </div>
+        <div class="row" ng-show="carData.myCar.model_name !=''">
+            <div class="col-sm-3">Model:</div>
+            <div class="col-sm-9"> {{carData.myCar.model_name}}</div>
+        </div>
+        <div class="row" ng-show="carData.myCar.model_trim !=''">
+            <div class="col-sm-3">Trim:</div>
+            <div class="col-sm-9"> {{carData.myCar.model_trim}}</div>
+        </div>
+        <div class="row" ng-show="carData.car.body_style !=''">
+            <div class="col-sm-3">Body Style:</div>
+            <div class="col-sm-9"> {{carData.myCar.body_style}}</div>
+        </div>
+        <div class="row" ng-show="carData.myCar.doors !=''">
+            <div class="col-sm-3">Doors:</div>
+            <div class="col-sm-9"> {{carData.myCar.doors}}</div>
+        </div>
+        <div class="row" ng-show="carData.myCar.seats !=''">
+            <div class="col-sm-3">Seats:</div>
+            <div class="col-sm-9"> {{carData.myCar.seats}}</div>
+        </div>
+        <div class="row" ng-show="carData.myCar.transmission_type !=''">
+            <div class="col-sm-3">Transmission:</div>
+            <div class="col-sm-9"> {{carData.myCar.transmission_type}}</div>
+        </div>
+        <div class="row" ng-show="carData.myCar.engine_power_rps !=''">
+            <div class="col-sm-3">Car Power:</div>
+            <div class="col-sm-9"> {{carData.car.engine_power_rps}}</div>
+        </div>
+        <div class="row" ng-show="carData.myCar.engine_torque_nm !=''">
+            <div class="col-sm-3">Engine Torque:</div>
+            <div class="col-sm-9"> {{carData.myCar.engine_torque_nm}}</div>
+        </div>
+        <div class="row" ng-show="carData.myCar.fuel_capacity_l !=''">
+            <div class="col-sm-3">Fuel Capacity in Liters:</div>
+            <div class="col-sm-9"> {{carData.myCar.fuel_capacity_l}}</div>
+        </div>
+    </div>
+
+    <br />
+
+    <div class="row">
+        <div id="imageCarousel">
+                <uib-carousel interval="slideInterval">
+                    <uib-slide ng-repeat="url in carData.imageURLs">
+                        <img class="img-responsive" ng-src="{{url}}" width="500" height="500"/>
+                    </uib-slide>
+                </uib-carousel>
+            </div>
+    </div>
+
+    <br />
+
+    <!--Hidden DIV containing car data results-->
+    <!--enter the recalls into a collapsible panel-->
+
+        <div class="row">
+            <div class="panel" ng-show="carData.recalls.Count>0">
+                <div class="panel-heading bg-red"><h3 class="panel-title" a href="" ng-click="isCollapsed = !isCollapsed" span="white bold">View Recall ({{carData.recalls.Count}})</h3></div>
+                <div class="panel-body">
+                    <div ng-repeat="recall in carData.recalls.Results">
+                        <div class="bold" ng-show="recall.NHTSACampaignNumber !=null">
+                            <div class="col-sm-3">NHTSACampaignNumber:</div>
+                            <div class="col-sm-9">{{recall.NHTSACampaignNumber}}</div>
+                        </div>
+                        <div class="bold" ng-show="recall.Component !=null">
+                            <div class="col-sm-3">Recall Component:</div>
+                            <div class="col-sm-9">{{recall.Component}}</div>
+                        </div>
+                        <div class="bold" ng-show="recall.Summary !=null">
+                            <div class="col-sm-3">Summary:</div>
+                            <div class="col-sm-9">{{recall.Summary}}</div>
+                        </div>
+                        <div class="bold" ng-show="recall.Conequence !=null">
+                            <div class="col-sm-3">Consequence:</div>
+                            <div class="col-sm-9">{{recall.Conequence}}</div>
+                        </div>
+                        <div class="bold" ng-show="recall.Remedy !=null">
+                            <div class="col-sm-3">Remedy:</div>
+                            <div class="col-sm-9">{{recall.Remedy}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+</div>
+</div>
+
